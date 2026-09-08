@@ -5,7 +5,7 @@ using u32 = unsigned int;
 using i32 = int;
 
 i32 main(void) {
-    u32 m, n;
+    u32 n, m;
     cin >> n >> m;
 
     // SSC storage
