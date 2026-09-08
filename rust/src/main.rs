@@ -1,6 +1,17 @@
 use std::cmp;
 use std::io;
 
+fn mushrooms(v : u32) {
+    let mut res : u32 = 0;
+    let mut cnt = 1;
+    while v > 0 {
+        res += v;
+        v -= cnt;
+        cnt += 1;
+    }
+    return res;
+}
+
 fn find_scc(graph : &Vec<Vec<u32>>, scc : &mut Vec<u32>, off : &mut Vec<usize>) {
     let n = graph.len();
     let mut enter : Vec<u32> = vec![0; n];
@@ -13,7 +24,12 @@ fn find_scc(graph : &Vec<Vec<u32>>, scc : &mut Vec<u32>, off : &mut Vec<usize>) 
     let mut cc : usize = 0;
 
     for start in 0..n {
-        if enter[start] != 0 { continue; } frames.push((start, 0)); (enter[start], exit[start]) = (counter, counter); counter += 1; stk.push(start as u32); on_stk[start] = true;
+        if enter[start] != 0 { continue; }
+        frames.push((start, 0));
+        (enter[start], exit[start]) = (counter, counter);
+        counter += 1;
+        stk.push(start as u32);
+        on_stk[start] = true;
 
         while !frames.is_empty() {
             let frame = frames.last_mut().unwrap();
@@ -60,20 +76,15 @@ fn find_scc(graph : &Vec<Vec<u32>>, scc : &mut Vec<u32>, off : &mut Vec<usize>) 
 fn main() {
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
-    let n = input.trim().parse().unwrap();
-
-    // Cost
-    input.clear();
-    io::stdin().read_line(&mut input).unwrap();
-    let cost : Vec<u32> = input
+    let nm : Vec<u32> = input
         .split_whitespace()
         .map(|x| x.parse().unwrap())
         .collect();
+    input.clear();
+    
+    let n, m = (nm[0], nm[1]);
 
     // Graph
-    input.clear();
-    io::stdin().read_line(&mut input).unwrap();
-    let m = input.trim().parse().unwrap();
     let mut graph : Vec<Vec<u32>> = vec![Vec::new(); n];
 
     for _ in 0..m {
@@ -81,36 +92,21 @@ fn main() {
         io::stdin().read_line(&mut input).unwrap();
         let mut it = input.split_whitespace();
         let src : usize = it.next().unwrap().parse().unwrap();
-        let sin : u32 = it.next().unwrap().parse().unwrap();
-        graph[src - 1].push(sin - 1); 
+        let sin : usize = it.next().unwrap().parse().unwrap();
+        let w : u32 = it.next().unwrap().parse().unwrap();
+        w = (w);
+        graph[src - 1].push((sin - 1, mushrooms(w))); 
     }
+    
+    io::stdin().read_line(&mut input).unwrap();
+    let start : u32 = input.trim().parse().unwrap();
 
     // Vars
     let mut scc : Vec<u32> = vec![0; n];
     let mut off : Vec<usize> = Vec::with_capacity(n);
-    find_scc(&graph, &mut scc, &mut off);
 
-    let mut total_ways : u64 = 1;
-    let mut total_cost : u64 = 0;
-
-    let mut start;
-    let mut end = n;
-    for i in (0..off.len()).rev() {
-        let mut min_cost : u32 = u32::MAX;
-        let mut count : u64 = 0;
-        start = off[i];
-        for j in (start..end).rev() {
-            if cost[scc[j] as usize] < min_cost {
-                min_cost = cost[scc[j] as usize];
-                count = 1;
-            } else if cost[scc[j] as usize] == min_cost {
-                count += 1;
-            }
-        }
-        total_cost += min_cost as u64;
-        total_ways = (total_ways * count) % 1_000_000_007;
-        end = start;
-    }
-
-    println!("{} {}", total_cost, total_ways);
+    find_scc(& graph, &mut scc, &mut off);
+    
+    
 }
+
