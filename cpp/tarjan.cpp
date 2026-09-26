@@ -10,9 +10,16 @@ using i32 = int;
 #pragma GCC optimization("O3")
 #pragma GCC target("avx2")
 
-void tarjan(vector<vector<pair<u32, i32>>> &g, vector<vector<u32>> &scc, u32 &counter,
-            vector<u32> &enter, vector<u32> &exit, vector<u32> &stk, vector<bool> &on_stk) {
-        
+void tarjan(vector<vector<pair<u32, i32>>> &g, vector<vector<u32>> &scc) {
+     
+    size_t n = g.size();
+    vector<u32> enter(n, 0);
+    vector<u32> exit(n, 0);
+    vector<bool> on_stk(n, 0);
+    vector<u32> stk;
+    stk.reserve(n);
+    u32 counter = 0;
+
     auto fn = [&](auto&& self, u32 v) -> void {
         enter[v] = exit[v] = counter++;
         stk.push_back(v);
@@ -50,10 +57,7 @@ i32 main(void) {
     cin >> n >> m;
 
     vector<vector<pair<u32, i32>>> g(n);
-    vector<u32> enter(n, 0);
-    vector<u32> exit(n, 0);
-    vector<vector<u32>> scc; vector<u32> stk; stk.reserve(n);
-    vector<bool> on_stk(n, 0);
+    vector<vector<u32>> scc;
 
     for (u32 i = 0; i < m; ++i) {
         i32 a, b, w;
@@ -63,7 +67,7 @@ i32 main(void) {
     }
     
     u32 c = 0;
-    tarjan(g, scc, c, enter, exit, stk, on_stk);
+    tarjan(g, scc);
 
     for (auto &x : scc)
         sort(x.begin(), x.end());

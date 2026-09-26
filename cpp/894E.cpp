@@ -1,6 +1,7 @@
 #include <iostream>
 #include <numeric>
 #include <vector>
+#include <map>
 
 using namespace std;
 using u64 = unsigned long long;
@@ -39,7 +40,7 @@ u32 find_scc(vector<vector<pair<u32, u32>>> &g, vector<u32> &scc) {
                 self(self, to);
                 fup[v] = min(fup[v], fup[to]);
             } else if (on_stak[to]) {
-                fup[v] = min(fup[v], fup[to]);
+                fup[v] = min(fup[v], tin[to]);
             }
         }
 
@@ -80,19 +81,20 @@ i32 main(void) {
     }
 
     csz.resize(find_scc(graph, scc));
-    vector<tuple<u32, u32, u32>> edges;
+    map<u32, u64> edges_mapa;
 
     for (u32 i = 0; i < n; ++i) {
         for (auto to : graph[i]) {
             if (scc[i] == scc[to.first]) {
                 csz[scc[i]] += mushrooms(to.second);
             } else {
-                edges.push_back({i, to.first, to.second});
+                edges_mapa[((u64)i << 32) + to.first] = to.second;
             }
         }
     }
 
     // Do something with DAG edges
+    
     // Kan algorithm + DP
 
     u64 scc_sum = accumulate(csz.begin(), csz.end(), 0ULL);

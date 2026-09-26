@@ -1,5 +1,6 @@
 use std::cmp;
 use std::io;
+
 fn mushrooms(mut v : u32) -> u32{
     let mut res : u32 = 0;
     let mut cnt = 1;
