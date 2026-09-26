@@ -25,10 +25,11 @@ vector<Two> find_bridges(vector<vector<Two>> &g)
         frames.push_back({start, 0, start});
 
         while (!frames.empty()) {
-            auto [v, n, a] = frames.back();
+            auto &top = frames.back();
+            auto [v, n, a] = top;
             if (n < g[v].size()) {
                 auto to = g[v][n].n0;
-                frames.back().n++;
+                top.n++;
                 if (to == a) continue;
                 if (!tin[to]) {
                     tin[to] = low[to] = counter++;
@@ -38,15 +39,13 @@ vector<Two> find_bridges(vector<vector<Two>> &g)
                 }
                 continue;
             }
-            u32 ancestor = a;
-            u32 vertex = v;
+
             frames.pop_back();
-            if (!frames.empty()) {
-                low[ancestor] = min(low[ancestor], low[vertex]);
-                if (low[vertex] > tin[ancestor]) {
-                    bridges.push_back({ancestor + 1, vertex + 1});
-                }
-            }
+
+            if (frames.empty()) continue;
+
+            low[a] = min(low[a], low[v]);
+            if (low[v] > tin[a]) bridges.push_back({a, v});
         }
     }
     return bridges;
@@ -60,14 +59,14 @@ i32 main(void) {
 
     vector<vector<Two>> g(s);
     for (u32 src, sin, i = 0; i < e; ++i) {
-        file >> src >> sin;
-        src--; sin--;
+        file >> src >> sin; src--; sin--;
         g[src].push_back({sin, 1});
         g[sin].push_back({src, 1});
     }
 
     vector<Two> bridges = find_bridges(g);
-    cout << "Bridges count: " << bridges.size() << endl;
-    for (auto x : bridges) { cout << x.n0 << '-' << x.n1<< '\n'; }
+    cout << "Bridges count: " << bridges.size() << "\n[ ";
+    for (auto x : bridges) { cout << x.n0 + 1 << '-' << x.n1<< ' '; }
+    cout << "]\n";
     return 0;
 }
