@@ -97,7 +97,7 @@ fn main() {
     }
     
     io::stdin().read_line(&mut input).unwrap();
-    let start : u32 = input.trim().parse().unwrap();
+    //let start : u32 = input.trim().parse().unwrap();
 
     // Strong Conection Components
     let mut scc : Vec<u32> = vec![0; n];

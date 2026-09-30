@@ -8,7 +8,7 @@ using u32 = unsigned int;
 using i32 = int;
 
 struct Two {u32 n0, n1;};
-struct Frame {u32 v, n, a;};
+struct Frame {u32 v, n, a, c;};
 
 vector<Two> find_bridges(vector<vector<Two>> &g)
 {
@@ -26,11 +26,11 @@ vector<Two> find_bridges(vector<vector<Two>> &g)
 
         while (!frames.empty()) {
             auto &top = frames.back();
-            auto [v, n, a] = top;
+            auto [v, n, a, c] = top;
             if (n < g[v].size()) {
                 auto to = g[v][n].n0;
                 top.n++;
-                if (to == a) continue;
+                if (to == a && !c) { c++; continue; }
                 if (!tin[to]) {
                     tin[to] = low[to] = counter++;
                     frames.push_back({to ,0, v});
