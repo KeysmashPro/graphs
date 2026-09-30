@@ -2,21 +2,27 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-using namespace std; using usize = size_t;
+
+template<typename T>
+using vec = std::vector<T>;
+
+using namespace std;
+using usize = size_t;
 using u32 = unsigned int;
 using i32 = int;
 
-struct Frame {u32 v, n, a, c;};
 
-/* v - current vertex, a - ancestor, n - neighbot counter c - multi graph fix */
-void articulation_points(vector<vector<pair<u32,u32>>> &g, vector<pair<u32,u32>> &bridges, vector<u32> &points)
+struct Frame {u32 v, n, a, s;};
+
+/* v - current vertex, a - ancestor, n - neighbot counter, s - multi graph skip */
+void articulation_points(vec<vec<pair<u32,u32>>> &g, vec<pair<u32,u32>> &bridges, vec<u32> &points)
 {
     u32 n = g.size();
-    vector<bool> art_point(n, false);
-    vector<u32> tin(n, 0);
-    vector<u32> low(n, 0);
+    vec<bool> art_point(n, false);
+    vec<u32> tin(n, 0);
+    vec<u32> low(n, 0);
     u32 counter = 1;
-    vector<Frame> frames;
+    vec<Frame> frames;
 
     for (u32 start = 0; start < n; ++start) {
         if (tin[start]) continue;
@@ -26,11 +32,11 @@ void articulation_points(vector<vector<pair<u32,u32>>> &g, vector<pair<u32,u32>>
 
         while(!frames.empty()) {
             auto &top = frames.back();
-            auto [v, n, a, c] = top;
+            auto [v, n, a, s] = top;
             if (n < g[v].size()) {
                 auto to = g[v][n].first;
                 top.n++;
-                if (a == to && !c) { top.c++; continue; }
+                if (a == to && !s) { top.s++; continue; }
                 if(!tin[to]) {
                     if (v == a) src_counter++;
                     tin[to] = low[to] = counter++;
@@ -60,15 +66,15 @@ i32 main(void) {
     ifstream file("test.txt");
     file >> n >> m;
     
-    vector<vector<pair<u32,u32>>> g(n);
+    vec<vec<pair<u32,u32>>> g(n);
         for (u32 src, sin, i = 0; i < m; ++i) {
         file >> src >> sin; src--; sin--;
         g[src].push_back({sin, 1});
         g[sin].push_back({src, 1});
     }
 
-    vector<pair<u32,u32>> bridges;
-    vector<u32> points;
+    vec<pair<u32,u32>> bridges;
+    vec<u32> points;
     articulation_points(g, bridges, points);
     sort(points.begin(), points.end());
     sort(bridges.begin(), bridges.end());
